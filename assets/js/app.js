@@ -8,7 +8,7 @@ const showAlert = (elementId, message) => {
 
 }
 
-const hideAlert = elementId=>{
+const hideAlert = elementId => {
     const alert = document.getElementById(elementId)
     alert.classList.add('d-none')
 }

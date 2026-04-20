@@ -1,16 +1,41 @@
-document.getElementById('loginForm')?.addEventListener('submit',(e) => {
+import { hideAler,showAlert, setButtonLoading, loginUser , observeAuth, getFirebaseErrorMessage } from "./auth.js"
+
+const form= document.getElementById('loginForm')
+const emailInput = document.getElementById('loginEmail')
+const passwordInput = document.getElementById('loginPassword')
+const loginBtn = document.getElementById('loginBtn')
+
+observeAuth((user) => {
+    if(user){
+        window.location.href = './../../dashboard.html'
+    }
+})
+
+
+
+
+
+form?.addEventListener('loginForm')?.addEventListener('submit',(e) => {
     e.preventDefault()
 
-    const email = document.getElementById('loginEmail').value
-    const password = document.getElementById('loginPassword').value
+    hideAlert('loginAlert')
+
+    const email = emailInput.value.trim()
+    const password = passwordInput.value.trim()
 
     if(!email || password ){
         showAlert('loginAlert', 'Por favor, completa todos los campos')
         return 
     }
 
+    try {
+        setButtonLoading(loginBtn,true,'<i class = ""bi bi-box-arrow-in-right me-2></i>Iniciar Sesión,Iniciando Sesión')
+        await loginUser({email,password})
+        window.location.href = './../../dashboard.html'
+    } catch (error) {
+        showAlert('loginAlert',getFirebaseErrorMessage(error))
+    }finally{
+        setButtonLoading(loginBtn,false,'<i class = ""bi bi-box-arrow-in-right me-2></i>Iniciar Sesión')
+    }
 
-    localStorage.setItem('userName',email.split('@')[0])
-
-    window.location.href = 'dashboard.html'
 })
