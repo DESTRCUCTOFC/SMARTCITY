@@ -1,4 +1,4 @@
-import { hideAler,showAlert, setButtonLoading, loginUser , observeAuth, getFirebaseErrorMessage } from "./auth.js"
+import { hideAlert,showAlert, setButtonLoading, loginUser , observeAuth, getFirebaseErrorMessage } from "./auth.js"
 
 const form= document.getElementById('loginForm')
 const emailInput = document.getElementById('loginEmail')
@@ -15,7 +15,7 @@ observeAuth((user) => {
 
 
 
-form?.addEventListener('loginForm')?.addEventListener('submit',(e) => {
+form?.addEventListener('submit', async (e) => {
     e.preventDefault()
 
     hideAlert('loginAlert')
@@ -23,14 +23,14 @@ form?.addEventListener('loginForm')?.addEventListener('submit',(e) => {
     const email = emailInput.value.trim()
     const password = passwordInput.value.trim()
 
-    if(!email || password ){
+    if(!email || !password ){
         showAlert('loginAlert', 'Por favor, completa todos los campos')
         return 
     }
 
     try {
         setButtonLoading(loginBtn,true,'<i class = ""bi bi-box-arrow-in-right me-2></i>Iniciar Sesión,Iniciando Sesión')
-        await loginUser({email,password})
+        await loginUser({email, password})
         window.location.href = './../../dashboard.html'
     } catch (error) {
         showAlert('loginAlert',getFirebaseErrorMessage(error))

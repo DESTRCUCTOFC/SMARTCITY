@@ -10,12 +10,12 @@ const registerBtn = document.getElementById('registerBtn')
 const successBox = document.getElementById('registerSuccess')
 
 
-form?.addEventListener('submit',(e) => {
+form?.addEventListener('submit',async (e) => {
     e.preventDefault()
 
     hideAlert('registerAlert')
-    successBox.classList.add('d-none')
-    successBox.textContent = ''
+    //successBox?.classList.add('d-none')
+    //successBox?.textContent = ''
 
 
     const name = nameInput.value.trim()
@@ -49,8 +49,8 @@ form?.addEventListener('submit',(e) => {
             )
             await registerUser({name,email,password,favoriteCity})
 
-            successBox.textContent = 'Cuenta creada correctamente'
-            successBox.classList.remove = 'd-none'
+           // successBox?.textContent = 'Cuenta creada correctamente'
+            //successBox?.classList.remove = 'd-none'
 
             setTimeout(() => {
                 window.location.href = './../../dashboard.html'
@@ -63,7 +63,7 @@ form?.addEventListener('submit',(e) => {
             setButtonLoading(
                 registerBtn,
                 false,
-                '<i class = ""bi bi-box-arrow-in-right me-2></i>Crear Cuenta'
+                '<i class = "bi bi-box-arrow-in-right me-2"></i>Crear Cuenta'
             )
             
         }

@@ -1,7 +1,7 @@
 import { 
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    onAuthStageChanged,
+    onAuthStateChanged,
     signOut
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 import {
@@ -9,7 +9,7 @@ import {
     setDoc,
     getDoc,
     serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-Firestore.js";
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 import { auth,db } from "./firebase-config.js"
 
 export function showAlert(elementId, message){
@@ -50,8 +50,8 @@ export async function loginUser({email, password}){
 }
 
 export async function getCurrentUserProfile(uid){
-    const doc = doc(db,'users',uid)
-    const user = await getDoc(doc)
+    const docUser = doc(db,'users',uid)
+    const user = await getDoc(docUser)
 
     if(!user.exists()) return null
 

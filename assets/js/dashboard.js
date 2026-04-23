@@ -6,21 +6,22 @@ const userEmail = document.getElementById('userEmail')
 const favoriteCity = document.getElementById('favoriteCity')
 const logoutBtn = document.getElementById('logoutBtn')
 
-observeAuth( async (user) =>{
+observeAuth( async (user) => {
     if(!user){
         window.location.href = './../../login.html'
         return 
     }
-    const profile = await getCurrentUserProfile(user.id)
+    const profile = await getCurrentUserProfile(user.uid)
+    
 
     const resolvedName = profile?.name || 'Usuario'
     const resolvedEmail = profile?.email || '--'
     const resolveCity = profile ?.favoriteCity || 'No Added'
 
     userName.textContent = resolvedName
-    navUserName.textContent = resolvedName
-    userEmail.textContent = resolvedEmail
-    favoriteCity.textContent = resolveCity
+   // navUserName.textContent = resolvedName
+    //userEmail.textContent = resolvedEmail
+   // favoriteCity.textContent = resolveCity
 })
 
 logoutBtn?.addEventListener('click',async() => {
