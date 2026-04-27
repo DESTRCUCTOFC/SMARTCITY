@@ -1,4 +1,4 @@
-import { observeAuth,logoutUser ,getCurrentUserProfile } from "./auth.js"
+import { observeAuth,logoutUser ,getCurrentUserProfile, showAlert, setButtonLoading, updateCurrentUserProfile, hideAlert } from "./auth.js"
 
 //Import nuevo fase 3 
 import { getCityWeather,formatWeatherUpdateTime } from "./weather.js"
@@ -23,6 +23,18 @@ const weatherWind = document.getElementById('weatherWind')
 const weatherCoords = document.getElementById('weatherCoords')
 const weatherUpdateAt = document.getElementById('weatherUpdateAt')
 const weatherIcon = document.getElementById('weatherIcon')
+
+//constantes parsa el perfil
+const editProfileForm = document.getElementById('editProfileForm')
+const editName = document.getElementById('editName')
+const editEmail = document.getElementById('editEmail')
+const editCity = document.getElementById('editCity')
+const editprofileBtn = document.getElementById('editProfileBtn')
+
+const editProfileModalElement = document.getElementById('editProfileModal')
+const editProfileModal = editProfileElement ? bootstrap.Modal.getOrCreateInstance(editProfileModalElement) : null
+
+
 
 // Funciones de clima 
 
@@ -58,6 +70,37 @@ const builLocationLabel = location => {
         parts.push(location.country)
     }
     return parts.join(", ")
+}
+
+const  renderProfile = (user,profile) => {
+    const resolvedName  = profile?.name || user.eamil?.split('@') [0] || Usuario
+    const resolvedEmail = profile?.email || user.email || '-'
+    const resolvedCity = profile?.favoriteCity?.trim() || ''
+
+    userName.textContent = resolvedName
+    navUserName.textContent = resolvedName
+    userEmail.textContent = resolvedEmail
+    favoriteCity.textContent = resolvedCity || 'No definida'
+
+    editName.value = resolvedName
+    editEmail.value = resolvedEmail
+    editCity.value = resolvedCity 
+
+    currentFavoriteCity = resolvedCity
+
+
+
+}
+
+const reloadProfileAndWeather = async () => {
+    if(!currentUser) {
+        return 
+    }
+
+    const profile = await getCurrentUserProfile(currentUser.uid)
+    currentProfile = profile 
+    renderProfile(currentUser,profile)
+    await loadWeather(currentFavoriteCity)
 }
 
 const loadWeather = async (city)=>{
@@ -107,17 +150,10 @@ observeAuth( async (user) => {
         return 
     }
     try {
+        currentUser = user
         const profile = await getCurrentUserProfile(user.uid)
-        const resolvedName = profile?.name || user.email?.split('@')[0] || 'Usuario'
-        const resolvedEmail = profile?.email || user.email || '--'
-        const resolveCity = profile ?.favoriteCity?.trim() || 'No Added'
-        
-        userName.textContent = resolvedName
-        navUserName.textContent = resolvedName
-        userEmail.textContent = resolvedEmail
-        favoriteCity.textContent = resolveCity
-
-        currentFavoriteCity = resolveCity 
+        currentProfile = profile
+        renderProfile(user,profile)
 
         await loadWeather(currentFavoriteCity)
     } catch (error) {
@@ -133,4 +169,51 @@ logoutBtn?.addEventListener('click',async() => {
     await logoutUser()
     window.location.href = './../../login.html'
 
+})
+
+editProfileForm?.addEventListener('submit',async (event) => {
+    event.preventDefault()
+
+    hideAlert('profileAlert')
+    hideAlert('profileSuccess')
+
+    const name=editName.value.trim()
+    const city = editCity.value.trim()
+
+    if(!name){
+        showAlert('profilelAlert','El nombre es obligatorio')
+    }
+    if(!city){
+        showAlert('profileAlert','La ciudad es obliogatoria')
+    }
+
+    try {
+        setButtonLoading(
+            saveProfileBtn,
+            true,
+            '<i class ="bi bi-check-circle m2"></i> Guardar Cambios','Guardando...'
+        )
+
+        await updateCurrentUserProfile(currentUser.uid,{
+            name,
+            favoriteCity: city
+        })
+
+        showAlert('profileSuccess' , 'Perfil Actualizado')
+        await reloadProfileAndWeather()
+        setTimeout(() =>{
+            editProfileModal?.hide()
+            hideAlert('profileSuccess')
+        },1500)
+
+    }catch(error){
+        showAlert('profileAlert',error.message || 'No se pudo actualizar')
+
+    }finally{
+        setButtonLoading(
+            saveProfileBtn,
+            false,
+            '<i class ="bi bi-check-circle m2"></i> Guardar Cambios'
+        )
+    }
 })

@@ -9,6 +9,7 @@
     doc,
     setDoc,
     getDoc,
+    updateDoc,
     serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
@@ -46,9 +47,9 @@
         email,
         favoriteCity: favoriteCity || "",
         createdAt: serverTimestamp()
-    });
+    })
 
-    return user;
+    return user
     }
 
     export async function loginUser({ email, password }) {
@@ -58,13 +59,22 @@
 
     export async function getCurrentUserProfile(uid) {
     const ref = doc(db, "users", uid);
-    const snap = await getDoc(ref);
-
-    if (!snap.exists()) return null;
-
+    await updateDoc(user,{
+        ...data , 
+        updateAt: sereverTimestamp()
+    });
+    if(!snap.exists()) return null;
     return snap.data();
     }
-
+/*
+    export async function updateCurrentUserProfile (uid,data){
+        const ref = doc(db,'users',uid)
+        await updateDoc = await updateDoc(user, {
+            ...data,
+            updatedAt: serverTimestamp()
+        });
+    }
+*/
     export function observeAuth(callback) {
     return onAuthStateChanged(auth, callback);
     }
